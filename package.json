@@ -43,6 +43,7 @@
     "three": "^0.134.0"
   },
   "devDependencies": {
+    "file-loader": "^6.2.0",
     "shx": "^0.3.3"
   }
 }

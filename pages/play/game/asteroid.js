@@ -2,39 +2,42 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+// import tr3b from '../../../models/TR-3B.glb';
 
 const Target = ({ position, updateHitCount, updateMissCount }) => {
   const [hit, setHit] = useState(false);
   const ref = useRef();
   const direction = useRef({ x: Math.random() - 0.5, y: Math.random() - 0.5 });
+  // const shipRef = useRef();
 
-  useFrame(({ camera }) => {
-    // Rotate the target based on the camera's frame angle
-    const angle = Math.atan2(camera.position.x, camera.position.z);
-    ref.current.rotation.y = angle;
+  useFrame(() => {
 
-    // Move the target closer to the camera
-    const distance = Math.sqrt(camera.position.x ** 2 + camera.position.z ** 2);
-    ref.current.position.x = Math.sin(angle) * distance * 0.5;
-    ref.current.position.z = -Math.cos(angle) * distance * 0.5;
+    // Rotate the target
+    ref.current.rotation.y += 0.01;
 
-    // Move the target up and down
+    // Move the target
     const speed = 0.01;
+    ref.current.position.x += speed * direction.current.x;
     ref.current.position.y += speed * direction.current.y;
 
     if (ref.current.position.y > 2 || ref.current.position.y < -2) {
       direction.current.y *= -1;
     }
+    if (ref.current.position.x > 2 || ref.current.position.x < -2) {
+      direction.current.x *= -1;
+    }
   });
 
   const handleClick = (event) => {
-    // Check if the target was clicked
-    if (event.object === ref.current) {
+    // Check if the target was clicked 
+    if (event.object === ref.current && !hit) { // Only count the hit if the target is green
       setHit(true);
       updateHitCount();
       setTimeout(() => {
         setHit(false);
       }, 3000); // Reset the hit state after 3 seconds
+    } else {
+      updateMissCount();
     }
   };
 
@@ -46,40 +49,20 @@ const Target = ({ position, updateHitCount, updateMissCount }) => {
   );
 };
 
-const Background = () => {
-  const { camera } = useThree();
-  const ref = useRef();
-
-  useEffect(() => {
-    const handleMissClick = () => {
-      updateMissCount();
-    };
-
-    ref.current.addEventListener('click', handleMissClick);
-
-    return () => {
-      ref.current.removeEventListener('click', handleMissClick);
-    };
-  }, []);
-
-  return (
-    <mesh ref={ref} position={[0, 0, -10]}>
-      <planeBufferGeometry args={[100, 100]} />
-      <meshStandardMaterial color="red" transparent opacity={0.5} depthWrite={false} />
-    </mesh>
-  );
-};
-
 const ShootingRange = () => {
   const [ship, setShip] = useState(null);
   const [hitCount, setHitCount] = useState(0);
   const [missCount, setMissCount] = useState(0);
 
-  useEffect(() => {
+/*   useEffect(() => {
     // Load the ship model
     const loader = new GLTFLoader();
-    loader.load('/models/TR-3B.glb', setShip);
-  }, []);
+    loader.load({tr3b}, (gltf) => {
+      const shipModel = gltf.scene;
+      shipModel.position.z = -5; // Set the initial position of the ship in front of the camera
+      setShip(shipModel);
+    });
+  }, []); */
 
   const updateHitCount = () => {
     setHitCount((prevCount) => prevCount + 1);
@@ -111,11 +94,16 @@ const ShootingRange = () => {
         <OrbitControls />
         <ambientLight intensity={0.5} />
         <pointLight position={[10, 10, 10]} intensity={0.5} />
-        {ship && <primitive object={ship} position={[0, 0, -5]} />}
-        <Background />
-        <Target position={[0, 0, -20]} updateHitCount={updateHitCount} updateMissCount={updateMissCount} />
-        <Target position={[0, 0, -15]} updateHitCount={updateHitCount} updateMissCount={updateMissCount} />
+        {/*
+         {ship && (
+          <group position={[0, 0, -5]}>
+            <primitive object={ship} />
+          </group>
+        )} 
+        */}
+        <Target position={[0, 2, -10]} updateHitCount={updateHitCount} updateMissCount={updateMissCount} />
         <Target position={[0, 0, -10]} updateHitCount={updateHitCount} updateMissCount={updateMissCount} />
+        <Target position={[2, 0, -10]} updateHitCount={updateHitCount} updateMissCount={updateMissCount} />
       </Canvas>
     </div>
   );
