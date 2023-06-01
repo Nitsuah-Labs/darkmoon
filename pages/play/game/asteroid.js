@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
-import { OrbitControls } from '@react-three/drei'
+import { useState, useEffect, useRef } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { OrbitControls } from '@react-three/drei';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Intersection } from 'three/src/core/Raycaster';
-import { Mesh } from 'three';
+import { Object3D } from 'three/src/core/Object3D';
+import { Mesh } from 'three/src/objects/Mesh';
 
 const Target = () => {
   const [hit, setHit] = useState(false);
@@ -14,19 +15,19 @@ const Target = () => {
     ref.current.rotation.y += 0.01;
   });
 
-  const handleClick = (e: MouseEvent, intersects: Intersection[]) => {
+  const handleClick = (e, intersects) => {
     // Check if the target was clicked
-    const target = intersects.find((intersect: Intersection) => intersect.object === ref.current);
+    const target = intersects.find(intersect => intersect.object === ref.current);
     if (target) {
       setHit(true);
     }
   };
 
   return (
-    <mesh ref={ref} onClick={handleClick}>
+    <Mesh ref={ref} onClick={handleClick}>
       <boxBufferGeometry attach="geometry" args={[1, 1, 1]} />
-      <meshStandardMaterial attach="material" color={hit ? 'red' : 'green'} />
-    </mesh>
+      <MeshStandardMaterial attach="material" color={hit ? 'red' : 'green'} />
+    </Mesh>
   );
 };
 
