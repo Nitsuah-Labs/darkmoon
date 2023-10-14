@@ -5,6 +5,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { InfinitySpin } from 'react-loader-spinner';
 import IPFSDownload from './IpfsDownload';
 import { addOrder, hasPurchased } from '../lib/api';
+import Link from 'next/link';
 
 //buyjs
 const STATUS = {
@@ -17,7 +18,7 @@ export default function Buy({ itemID }) {
   const { connection } = useConnection();
   const { publicKey, sendTransaction } = useWallet();
   const orderID = useMemo(() => Keypair.generate().publicKey, []); // Public key used to identify the order
-
+  const isOwner = ( publicKey ? publicKey.toString() === process.env.NEXT_PUBLIC_OG_PUBLIC_KEY : false );
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState(STATUS.Initial); // Tracking transaction status
 
@@ -65,7 +66,10 @@ export default function Buy({ itemID }) {
       const purchased = await hasPurchased(publicKey, itemID);
       if (purchased) {
         setStatus(STATUS.Paid);
-        console.log("Address has already purchased this item!");
+        console.log( `${publicKey} has already purchased this item!`);
+      } else if (isOwner) {
+        setStatus(STATUS.Paid);
+        console.log( `${publicKey} created this item!`);
       }
     }
     checkPurchased();
@@ -119,18 +123,22 @@ export default function Buy({ itemID }) {
   return (
     <div>
       {status === STATUS.Paid ? (
+        <div>
         <IPFSDownload 
           filename="ALIEN.jpg"
           hash="Qmcc9nvGwaYfPHZRqB3EbCudqbTc5Z5e15hSwyVAoKXa9V"
           cta="Download alien"
         />
+        <div className="header">
+        </div>
+      </div>
       ) : (
         <button
           disabled={loading}
           className="buy-button"
           onClick={processTransaction}
         >
-          Buy now 🤑
+          BUY 🤑
         </button>
       )}
     </div>

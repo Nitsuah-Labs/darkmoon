@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import { ConnectionProvider, WalletProvider } from "@solana/wallet-adapter-react";
+import {CoinbaseWalletAdapter} from "@solana/wallet-adapter-coinbase";
 import {
   GlowWalletAdapter,
   PhantomWalletAdapter,
@@ -10,7 +11,6 @@ import {
   TorusWalletAdapter,
 } from "@solana/wallet-adapter-wallets";
 import { clusterApiUrl } from "@solana/web3.js";
-
 import "@solana/wallet-adapter-react-ui/styles.css";
 import "../styles/globals.css";
 import "../styles/App.css";
@@ -25,9 +25,10 @@ const App = ({ Component, pageProps }) => {
 
   // @solana/wallet-adapter-wallets includes all the adapters but supports tree shaking and lazy loading --
   // Only the wallets you configure here will be compiled into your application, and only the dependencies
-  // of wallets that your users connect to will be loaded
+  // of wallets that your users connect to will be loaded - supports Coinbase Wallet now!
   const wallets = useMemo(
     () => [
+      new CoinbaseWalletAdapter(),
       new PhantomWalletAdapter(),
       new GlowWalletAdapter(),
       new SlopeWalletAdapter(),
