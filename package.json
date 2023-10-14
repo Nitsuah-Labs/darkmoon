@@ -43,7 +43,8 @@
     "three": "^0.134.0"
   },
   "devDependencies": {
-    "file-loader": "^6.2.0",
+    "parcel": "^2.9.3",
+    "prettier": "^2.5.1",
     "shx": "^0.3.3"
   }
 }
