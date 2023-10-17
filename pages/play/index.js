@@ -4,8 +4,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { InfinitySpin } from 'react-loader-spinner';
 import { hasPurchased } from '../../lib/api';
-import Lobby from "./game/Lobby.js";
-import ShootingRange from "./game/asteroid.js";
+import ShootingRange from "./game/Range.js";
 import Spline from '@splinetool/react-spline';
 import Link from 'next/link';
 
