@@ -1,22 +1,60 @@
-import React, { useRef } from "react";
+import React from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
-import * as THREE from "three";
+import { Physics, usePlane, useBox } from "@react-three/cannon";
+import Controls from "./Controls";
 
-const ShootingRange = () => {
-  const boxRef = useRef();
-
+function Plane(props) {
+  const [ref] = usePlane(() => ({ rotation: [-Math.PI / 2, 0, 0], ...props }));
   return (
-    <Canvas>
-      <ambientLight />
-      <pointLight position={[10, 10, 10]} />
-      <mesh ref={boxRef} onClick={(e) => console.log("click")} position={[0, 0, 0]}>
-        <boxGeometry args={[1, 1, 1]} />
-        <meshStandardMaterial color={new THREE.Color("lightblue")} />
-      </mesh>
-      <OrbitControls />
+    <mesh ref={ref} receiveShadow>
+      <planeBufferGeometry attach="geometry" args={[1009, 1000]} />
+      <shadowMaterial attach="material" color="#171717" />
+    </mesh>
+  );
+}
+
+function Cube(props) {
+  const [ref] = useBox(() => ({
+    mass: 1,
+    position: [0, 5, 0],
+    rotation: [0.4, 0.2, 0.5],
+    ...props
+  }));
+  const color = props.color ? props.color : "hotpink";
+  return (
+    <mesh receiveShadow castShadow ref={ref}>
+      <boxBufferGeometry />
+      <meshLambertMaterial attach="material" color={color} />
+    </mesh>
+  );
+}
+
+function Range() {
+  return (
+    <Canvas
+      shadowMap
+      sRGB
+      gl={{ alpha: false }}
+      camera={{ position: [-1, 1, 5], fov: 50 }}
+    >
+      <color attach="background" args={["lightblue"]} />
+      <Physics>
+        <Controls />
+        <hemisphereLight intensity={0.35} />
+        <spotLight
+          position={[10, 10, 10]}
+          angle={0.3}
+          penumbra={1}
+          intensity={2}
+          castShadow
+        />
+        <Plane />
+        <Cube />
+        <Cube position={[0, 10, -2]} color="rebeccapurple" />
+        <Cube position={[0, 20, -2]} color="darkseagreen" />
+      </Physics>
     </Canvas>
   );
-};
+}
 
-export default ShootingRange;
+export default Range;
