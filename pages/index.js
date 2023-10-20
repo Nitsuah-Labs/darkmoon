@@ -91,7 +91,12 @@ const App = () => {
             <tr>
             <button className="cta-button play-button">
               <Link href="/about"><a>ABOUT</a></Link></button>
-              <td><p>A web3 effort that funds opensource projects.</p><br /></td>
+              <td><p> A web3 effort that funds opensource projects.</p><br /></td>
+              </tr>
+              <tr>
+              <button className="cta-button play-button">
+              <Link href="/play"><a> PLAY </a></Link></button>
+                <td><p> A game built on three.js</p><br /></td>
               </tr>
               <div className="middle">
                 {publicKey ? renderItemBuyContainer() : renderNotConnectedContainer()}

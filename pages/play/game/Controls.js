@@ -1,4 +1,3 @@
-// Controls.js
 import React, { useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import { PointerLockControls } from "@react-three/drei";
@@ -10,17 +9,25 @@ const Controls = () => {
   const [moveBackward, setMoveBackward] = useState(false);
   const [moveLeft, setMoveLeft] = useState(false);
   const [moveRight, setMoveRight] = useState(false);
+  const [jump, setJump] = useState(false);
 
   useFrame(() => {
-    const velocity = 0.05;
+    const velocity = 0.1;
+    const rotationSpeed = 0.02;
+
     if (moveForward) {
       controlsRef.current.moveForward(velocity);
     } else if (moveLeft) {
-      controlsRef.current.moveRight(-velocity);
+      controlsRef.current.rotateY(rotationSpeed);
     } else if (moveBackward) {
       controlsRef.current.moveForward(-velocity);
     } else if (moveRight) {
-      controlsRef.current.moveRight(velocity);
+      controlsRef.current.rotateY(-rotationSpeed);
+    }
+
+    if (jump) {
+      controlsRef.current.getObject().position.y += 0.2;
+      setJump(false);
     }
   });
 
@@ -47,9 +54,9 @@ const Controls = () => {
         break;
 
       case "Space":
-        if (canJump === true) velocity.y += 350;
-        canJump = false;
+        setJump(true);
         break;
+
       default:
         return;
     }
