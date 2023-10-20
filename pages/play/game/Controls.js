@@ -1,3 +1,4 @@
+// Controls.js
 import React, { useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import { PointerLockControls } from "@react-three/drei";
