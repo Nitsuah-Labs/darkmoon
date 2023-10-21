@@ -12,33 +12,33 @@ const Controls = ({ playerRef }) => {
   const [jump, setJump] = useState(false);
 
   const handleMovement = (velocity, strafeSpeed) => {
-    // Introduce variables for velocity, acceleration, and deceleration
-    const acceleration = 0.01;
-    const deceleration = 0.001;
-
+    // Introduce variables for acceleration and deceleration
+    const acceleration = 0.002; // Try a smaller acceleration value
+    const deceleration = 0.05; // Try a higher deceleration value
+  
+    // Update velocity based on acceleration and deceleration
     if (moveForward) {
       // Increase velocity when moving forward
-      controlsRef.current.moveForward(velocity);
-      velocity += acceleration;
+      velocity = Math.min(velocity + acceleration, 0.1);
     } else if (moveBackward) {
       // Decrease velocity when moving backward
-      controlsRef.current.moveForward(-velocity);
-      velocity -= acceleration;
+      velocity = Math.max(velocity - acceleration, -0.1);
     } else {
       // Decelerate when not moving
-      if (velocity > 0) {
-        velocity -= deceleration;
-      } else if (velocity < 0) {
-        velocity += deceleration;
-      }
+      const deceleratedVelocity = velocity > 0 ? Math.max(velocity - deceleration, 0) : Math.min(velocity + deceleration, 0);
+      // Use the decelerated velocity only if it's not too small
+      velocity = Math.abs(deceleratedVelocity) > 0.0001 ? deceleratedVelocity : 0;
     }
-
+  
+    // Update controls based on velocity
+    controlsRef.current.moveForward(velocity);
+  
     if (moveLeft) {
       controlsRef.current.moveRight(-strafeSpeed);
     } else if (moveRight) {
       controlsRef.current.moveRight(strafeSpeed);
     }
-
+  
     if (jump) {
       const controlsObject = controlsRef.current.getObject();
       if (controlsObject) {
@@ -46,13 +46,11 @@ const Controls = ({ playerRef }) => {
         setJump(false);
       }
     }
-
+  
     // Update player position based on the controls
     const controlsObject = controlsRef.current.getObject();
     if (controlsObject && playerRef.current) {
       playerRef.current.position.copy(controlsObject.position);
-      console.log("Controls Position:", controlsObject.position);
-      console.log("Player Position:", playerRef.current.position);
     }
   };
 
