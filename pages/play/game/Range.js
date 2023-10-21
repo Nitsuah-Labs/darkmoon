@@ -33,16 +33,6 @@ function Cube(props) {
   );
 }
 
-function StatsComponent() {
-  const statsRef = useRef();
-
-  useFrame(() => {
-    if (statsRef.current) statsRef.current.update();
-  });
-
-  return <Html center>{statsRef.current && <Stats data={statsRef.current} />}</Html>;
-}
-
 function Range() {
   const playerRef = useRef();
 
@@ -55,6 +45,7 @@ function Range() {
     >
       <color attach="background" args={["grey"]} />
       <Physics>
+      <Stats />
       <Controls playerRef={playerRef} />
         <hemisphereLight intensity={0.35} />
         <spotLight
@@ -70,7 +61,6 @@ function Range() {
         <Cube position={[0, 10, -2]} color="rebeccapurple" />
         <Cube position={[0, 20, -2]} color="darkseagreen" />
       </Physics>
-      <StatsComponent />
     </Canvas>
   );
 }

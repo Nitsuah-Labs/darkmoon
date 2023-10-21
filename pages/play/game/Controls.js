@@ -13,6 +13,7 @@ const Controls = ({ playerRef }) => {
   const [jump, setJump] = useState(false);
 
   const handleMovement = (velocity, strafeSpeed) => {
+    console.log("handleMovement called");  
     if (moveForward) {
       controlsRef.current.moveForward(velocity);
     } else if (moveLeft) {
@@ -41,6 +42,8 @@ const Controls = ({ playerRef }) => {
   };
 
   useFrame(() => {
+    console.log("useFrame called");
+  
     const movementSpeed = 0.1;
     const strafeSpeed = 0.1;
     handleMovement(movementSpeed, strafeSpeed);
