@@ -3,12 +3,13 @@ import React, { forwardRef } from "react";
 import { useBox } from "@react-three/cannon";
 
 const Player = forwardRef((props, ref) => {
-  const [playerRef, api] = useBox(() => ({
+  const [playerRef] = useBox(() => ({
     mass: 1,
     position: [0, 5, 0],
     rotation: [0, 0, 0],
+    damping: 0.8,
     ...props,
-    ref, // Assign the ref here
+    ref,
   }));
 
   return (

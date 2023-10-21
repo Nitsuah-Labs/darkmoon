@@ -1,40 +1,22 @@
 // Range.js
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Stats } from "@react-three/drei";
-import { Physics, useBox, usePlane } from "@react-three/cannon";
+import { Physics } from "@react-three/cannon";
 import Controls from "./Controls";
 import Floor from "./Floor";
 import Player from "./Player";
-
-function Plane(props) {
-  const [ref] = usePlane(() => ({ rotation: [-Math.PI / 2, 0, 0], ...props }));
-  return (
-    <mesh ref={ref} receiveShadow>
-      <planeBufferGeometry attach="geometry" args={[1009, 1000]} />
-      <shadowMaterial attach="material" color="#171717" />
-    </mesh>
-  );
-}
-
-function Cube(props) {
-  const [ref] = useBox(() => ({
-    mass: 1,
-    position: [0, 5, 0],
-    rotation: [0.4, 0.2, 0.5],
-    ...props
-  }));
-  const color = props.color ? props.color : "red";
-  return (
-    <mesh receiveShadow castShadow ref={ref}>
-      <boxBufferGeometry />
-      <meshLambertMaterial attach="material" color={color} />
-    </mesh>
-  );
-}
+import Cube from "./Cube";
 
 function Range() {
   const playerRef = useRef();
+
+  useEffect(() => {
+    // Optional: You can set an initial position for the player if needed
+    if (playerRef.current) {
+      playerRef.current.api.position.set(0, 0, 0);
+    }
+  }, [playerRef]);
 
   return (
     <Canvas
@@ -47,7 +29,7 @@ function Range() {
       <Physics>
         <Stats />
         <Controls playerRef={playerRef} />
-<hemisphereLight intensity={0.35} />
+        <hemisphereLight intensity={0.35} />
         <spotLight
           position={[10, 10, 10]}
           angle={0.3}
@@ -56,10 +38,10 @@ function Range() {
           castShadow
         />
         <Floor />
-        <Player ref={playerRef}/>
-        <Cube />
+        <Player ref={playerRef} />
         <Cube position={[0, 10, -2]} color="rebeccapurple" />
         <Cube position={[0, 20, -2]} color="darkseagreen" />
+        <Cube position={[0, 30, -2]} color="darkorange" />
       </Physics>
     </Canvas>
   );

@@ -25,7 +25,7 @@ const Controls = ({ playerRef }) => {
       controlsObject.position.y += velocity;
     }
   };
-  
+
   const handleDown = (velocity) => {
     const downForce = 0.015;
     const controlsObject = controlsRef.current.getObject();
@@ -38,7 +38,7 @@ const Controls = ({ playerRef }) => {
 
   const handleMovement = (velocity, strafeSpeed, keys) => {
     const { forward, backward, left, right, jump, down } = keys;
-  
+
     if (forward) {
       velocity = Math.min(velocity + 0.002, 0.1);
     } else if (backward) {
@@ -46,22 +46,20 @@ const Controls = ({ playerRef }) => {
     } else {
       velocity = 0;
     }
-  
+
     controlsRef.current.moveForward(velocity);
-  
+
     if (left) {
       controlsRef.current.moveRight(-strafeSpeed);
     } else if (right) {
       controlsRef.current.moveRight(strafeSpeed);
     }
-  
+
     const controlsObject = controlsRef.current.getObject();
-  
+
     if (jump && !down) {
-      console.log("ARISE", velocity);
       handleJump(velocity);
     } else if (down && !jump) {
-      console.log("DESCENT", velocity);
       handleDown(velocity);
     } else if ((jump && down) || (!jump && !down)) {
       if (controlsObject && controlsObject.position.y > 0) {
@@ -70,11 +68,19 @@ const Controls = ({ playerRef }) => {
         controlsObject.position.y = 0;
       }
     }
+    // Log position to console
+    console.log(
+      "Position X:",
+      controlsObject.position.x.toFixed(2),
+      "Position Y:",
+      controlsObject.position.y.toFixed(2),
+      "Position Z:",
+      controlsObject.position.z.toFixed(2)
+    );
   };
 
   useEffect(() => {
     const handleKeyDown = (event) => {
-      console.log("Key down:", event.code);
       switch (event.code) {
         case "ArrowUp":
         case "KeyW":
@@ -102,16 +108,14 @@ const Controls = ({ playerRef }) => {
 
         case "KeyZ":
           setMovement((prev) => ({ ...prev, down: true, jump: false }));
-          console.log("down: true");
           break;
-  
+
         default:
           return;
       }
     };
 
     const handleKeyUp = (event) => {
-      console.log("Key up:", event.code);
       switch (event.code) {
         case "ArrowUp":
         case "KeyW":
@@ -139,8 +143,8 @@ const Controls = ({ playerRef }) => {
 
         case "KeyZ":
           setMovement((prev) => ({ ...prev, down: false, jump: false }));
-        break;
-  
+          break;
+
         default:
           return;
       }
