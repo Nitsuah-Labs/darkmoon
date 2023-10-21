@@ -28,7 +28,7 @@ const Controls = ({ playerRef }) => {
     if (forward) {
       velocity = Math.min(velocity + 0.002, 0.1);
     } else if (backward) {
-      velocity = Math.max(velocity - 0.002, -0.1);
+      velocity = Math.min(velocity - 0.002, -0.1);
     } else {
       velocity = 0;
     }
@@ -43,7 +43,7 @@ const Controls = ({ playerRef }) => {
 
     handleJump(velocity);
 
-    const gravity = 0.001;
+    const gravity = 0.003;
     const controlsObject = controlsRef.current.getObject();
 
     if (controlsObject && controlsObject.position.y > 0) {
@@ -53,18 +53,12 @@ const Controls = ({ playerRef }) => {
     }
   };
 
-  useFrame(() => {
-    const movementSpeed = 0.1;
-    const strafeSpeed = 0.1;
-    handleMovement(movementSpeed, strafeSpeed, movement);
-  });
-
   useEffect(() => {
     const handleKeyDown = (event) => {
       switch (event.code) {
         case "ArrowUp":
         case "KeyW":
-          setMovement((prev) => ({ ...prev, forward: true }));
+          setMovement((prev) => ({ ...prev, forward: true, backward: false }));
           break;
 
         case "ArrowLeft":
@@ -74,7 +68,7 @@ const Controls = ({ playerRef }) => {
 
         case "ArrowDown":
         case "KeyS":
-          setMovement((prev) => ({ ...prev, backward: true }));
+          setMovement((prev) => ({ ...prev, backward: true, forward: false }));
           break;
 
         case "ArrowRight":
@@ -130,6 +124,12 @@ const Controls = ({ playerRef }) => {
       document.removeEventListener("keyup", handleKeyUp);
     };
   }, []);
+
+  useFrame(() => {
+    const movementSpeed = 0.1;
+    const strafeSpeed = 0.1;
+    handleMovement(movementSpeed, strafeSpeed, movement);
+  });
 
   return (
     <PointerLockControls
