@@ -1,8 +1,9 @@
+// Controls.js
 import React, { useRef, useState, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 import { PointerLockControls } from "@react-three/drei";
 
-const Controls = () => {
+const Controls = ({ playerRef }) => {
   const controlsRef = useRef();
   const isLocked = useRef(false);
   const [moveForward, setMoveForward] = useState(false);
@@ -21,10 +22,21 @@ const Controls = () => {
     } else if (moveRight) {
       controlsRef.current.moveRight(strafeSpeed);
     }
-
+  
     if (jump) {
-      controlsRef.current.getObject().position.y += 0.2;
-      setJump(false);
+      const controlsObject = controlsRef.current.getObject();
+      if (controlsObject) {
+        controlsObject.position.y += 0.2;
+        setJump(false);
+      }
+    }
+  
+    // Update player position based on the controls
+    const controlsObject = controlsRef.current.getObject();
+    if (controlsObject && playerRef.current) {
+      playerRef.current.position.copy(controlsObject.position);
+      console.log("Controls Position:", controlsObject.position);
+      console.log("Player Position:", playerRef.current.position);
     }
   };
 
@@ -104,6 +116,7 @@ const Controls = () => {
 
   return (
     <PointerLockControls
+      ref={controlsRef}
       onUpdate={() => {
         if (controlsRef.current) {
           controlsRef.current.addEventListener("lock", () => {
@@ -116,7 +129,6 @@ const Controls = () => {
           });
         }
       }}
-      ref={controlsRef}
     />
   );
 };

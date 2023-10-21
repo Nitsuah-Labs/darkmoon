@@ -1,9 +1,11 @@
 // Range.js
-import React from "react";
-import { Canvas } from "@react-three/fiber";
-import { Physics, useBox } from "@react-three/cannon";
+import React, { useRef } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { Stats, Html } from "@react-three/drei";
+import { Physics, useBox, usePlane } from "@react-three/cannon";
 import Controls from "./Controls";
 import Floor from "./Floor";
+import Player from "./Player";
 
 function Plane(props) {
   const [ref] = usePlane(() => ({ rotation: [-Math.PI / 2, 0, 0], ...props }));
@@ -31,7 +33,19 @@ function Cube(props) {
   );
 }
 
+function StatsComponent() {
+  const statsRef = useRef();
+
+  useFrame(() => {
+    if (statsRef.current) statsRef.current.update();
+  });
+
+  return <Html center>{statsRef.current && <Stats data={statsRef.current} />}</Html>;
+}
+
 function Range() {
+  const playerRef = useRef();
+
   return (
     <Canvas
       shadowMap
@@ -39,9 +53,9 @@ function Range() {
       gl={{ alpha: false }}
       camera={{ position: [-1, 1, 5], fov: 50 }}
     >
-      <color attach="background" args={["black"]} />
+      <color attach="background" args={["grey"]} />
       <Physics>
-        <Controls />
+      <Controls playerRef={playerRef} />
         <hemisphereLight intensity={0.35} />
         <spotLight
           position={[10, 10, 10]}
@@ -51,10 +65,12 @@ function Range() {
           castShadow
         />
         <Floor />
+        <Player ref={playerRef} />
         <Cube />
         <Cube position={[0, 10, -2]} color="rebeccapurple" />
         <Cube position={[0, 20, -2]} color="darkseagreen" />
       </Physics>
+      <StatsComponent />
     </Canvas>
   );
 }
