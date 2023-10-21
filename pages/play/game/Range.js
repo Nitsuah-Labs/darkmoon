@@ -24,7 +24,7 @@ function Cube(props) {
     rotation: [0.4, 0.2, 0.5],
     ...props
   }));
-  const color = props.color ? props.color : "hotpink";
+  const color = props.color ? props.color : "red";
   return (
     <mesh receiveShadow castShadow ref={ref}>
       <boxBufferGeometry />
@@ -41,7 +41,7 @@ function Range() {
       shadowMap
       sRGB
       gl={{ alpha: false }}
-      camera={{ position: [-1, 1, 5], fov: 50 }}
+      camera={{ position: [-1, 1, 5], fov: 50, mass: 1 }}
     >
       <color attach="background" args={["grey"]} />
       <Physics>
@@ -56,7 +56,7 @@ function Range() {
           castShadow
         />
         <Floor />
-        <Player ref={playerRef} />
+        <Player ref={playerRef}/>
         <Cube />
         <Cube position={[0, 10, -2]} color="rebeccapurple" />
         <Cube position={[0, 20, -2]} color="darkseagreen" />

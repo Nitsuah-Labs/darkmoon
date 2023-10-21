@@ -5,68 +5,58 @@ import { PointerLockControls } from "@react-three/drei";
 const Controls = ({ playerRef }) => {
   const controlsRef = useRef();
   const isLocked = useRef(false);
-  const [moveForward, setMoveForward] = useState(false);
-  const [moveBackward, setMoveBackward] = useState(false);
-  const [moveLeft, setMoveLeft] = useState(false);
-  const [moveRight, setMoveRight] = useState(false);
-  const [jump, setJump] = useState(false);
+  const [movement, setMovement] = useState({
+    forward: false,
+    backward: false,
+    left: false,
+    right: false,
+    jump: false,
+  });
 
-  const handleMovement = (velocity, strafeSpeed) => {
-    // Introduce variables for acceleration and deceleration
-    const acceleration = 0.002; // Try a smaller acceleration value
-    const deceleration = 0.001; // Try a smaller deceleration value
-  
-    // Update velocity based on acceleration and deceleration
-    if (moveForward) {
-      // Increase velocity when moving forward
-      velocity = Math.min(velocity + acceleration, 0.1);
-    } else if (moveBackward) {
-      // Decrease velocity when moving backward
-      const deceleratedVelocity = velocity > 0 ? Math.max(velocity - deceleration, 0) : Math.min(velocity + deceleration, 0);
-      velocity = deceleratedVelocity;
-    } else {
-      // Decelerate when not moving
-      velocity = 0;
-      // const deceleratedVelocity = velocity > 0 ? Math.max(velocity - deceleration, 0) : Math.min(velocity + deceleration, 0);
-      // velocity = deceleratedVelocity;
+  const handleJump = (velocity) => {
+    const controlsObject = controlsRef.current.getObject();
+    if (controlsObject && movement.jump) {
+      // Apply a continuous upward force
+      velocity = Math.min(velocity + 0.01, 0.2);
+      controlsObject.position.y += velocity;
     }
-  
-    // Update controls based on velocity
+  };
+
+  const handleMovement = (velocity, strafeSpeed, keys) => {
+    const { forward, backward, left, right, jump } = keys;
+
+    if (forward) {
+      velocity = Math.min(velocity + 0.002, 0.1);
+    } else if (backward) {
+      velocity = Math.max(velocity - 0.002, -0.1);
+    } else {
+      velocity = 0;
+    }
+
     controlsRef.current.moveForward(velocity);
-  
-    if (moveLeft) {
+
+    if (left) {
       controlsRef.current.moveRight(-strafeSpeed);
-    } else if (moveRight) {
+    } else if (right) {
       controlsRef.current.moveRight(strafeSpeed);
     }
-  
-    if (jump) {
-      const controlsObject = controlsRef.current.getObject();
-      if (controlsObject) {
-        controlsObject.position.y += 0.5;
-        setJump(false);
-      }
-    }
-  
-    // Gravity simulation
-    const gravity = 0.02; // Adjust the gravity value as needed
 
+    handleJump(velocity);
+
+    const gravity = 0.001;
     const controlsObject = controlsRef.current.getObject();
-    if (controlsObject) {
-      if (controlsObject.position.y > 0) {
-        // Apply gravity if the player is above the ground
-        controlsObject.position.y -= gravity;
-      } else {
-        // Reset position to ground level
-        controlsObject.position.y = 0;
-      }
+
+    if (controlsObject && controlsObject.position.y > 0) {
+      controlsObject.position.y -= gravity;
+    } else {
+      controlsObject.position.y = 0;
     }
   };
 
   useFrame(() => {
     const movementSpeed = 0.1;
     const strafeSpeed = 0.1;
-    handleMovement(movementSpeed, strafeSpeed);
+    handleMovement(movementSpeed, strafeSpeed, movement);
   });
 
   useEffect(() => {
@@ -74,25 +64,26 @@ const Controls = ({ playerRef }) => {
       switch (event.code) {
         case "ArrowUp":
         case "KeyW":
-          setMoveForward(true);
+          setMovement((prev) => ({ ...prev, forward: true }));
           break;
 
         case "ArrowLeft":
         case "KeyA":
-          setMoveLeft(true);
+          setMovement((prev) => ({ ...prev, left: true }));
           break;
 
         case "ArrowDown":
         case "KeyS":
-          return;
+          setMovement((prev) => ({ ...prev, backward: true }));
+          break;
 
         case "ArrowRight":
         case "KeyD":
-          setMoveRight(true);
+          setMovement((prev) => ({ ...prev, right: true }));
           break;
 
         case "Space":
-          setJump(true);
+          setMovement((prev) => ({ ...prev, jump: true }));
           break;
 
         default:
@@ -104,22 +95,26 @@ const Controls = ({ playerRef }) => {
       switch (event.code) {
         case "ArrowUp":
         case "KeyW":
-          setMoveForward(false);
+          setMovement((prev) => ({ ...prev, forward: false }));
           break;
 
         case "ArrowLeft":
         case "KeyA":
-          setMoveLeft(false);
+          setMovement((prev) => ({ ...prev, left: false }));
           break;
 
         case "ArrowDown":
         case "KeyS":
-          setMoveBackward(false);
+          setMovement((prev) => ({ ...prev, backward: false }));
           break;
 
         case "ArrowRight":
         case "KeyD":
-          setMoveRight(false);
+          setMovement((prev) => ({ ...prev, right: false }));
+          break;
+
+        case "Space":
+          setMovement((prev) => ({ ...prev, jump: false }));
           break;
 
         default:
