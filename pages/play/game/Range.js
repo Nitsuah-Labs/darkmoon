@@ -1,7 +1,7 @@
 // Range.js
 import React, { useRef } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Stats, Html } from "@react-three/drei";
+import { Canvas } from "@react-three/fiber";
+import { Stats } from "@react-three/drei";
 import { Physics, useBox, usePlane } from "@react-three/cannon";
 import Controls from "./Controls";
 import Floor from "./Floor";
@@ -45,9 +45,9 @@ function Range() {
     >
       <color attach="background" args={["grey"]} />
       <Physics>
-      <Stats />
-      <Controls playerRef={playerRef} />
-        <hemisphereLight intensity={0.35} />
+        <Stats />
+        <Controls playerRef={playerRef} />
+<hemisphereLight intensity={0.35} />
         <spotLight
           position={[10, 10, 10]}
           angle={0.3}

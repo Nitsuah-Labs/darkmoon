@@ -1,6 +1,5 @@
 // Player.js
 import React, { forwardRef } from "react";
-import { useFrame } from "@react-three/fiber";
 import { useBox } from "@react-three/cannon";
 
 const Player = forwardRef((props, ref) => {
@@ -14,7 +13,6 @@ const Player = forwardRef((props, ref) => {
 
   return (
     <mesh receiveShadow castShadow ref={playerRef}>
-      {/* Customize the player geometry/material as needed */}
       <boxBufferGeometry />
       <meshLambertMaterial attach="material" color="blue" />
     </mesh>

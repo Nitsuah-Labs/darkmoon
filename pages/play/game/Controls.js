@@ -1,4 +1,3 @@
-// Controls.js
 import React, { useRef, useState, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 import { PointerLockControls } from "@react-three/drei";
@@ -13,17 +12,33 @@ const Controls = ({ playerRef }) => {
   const [jump, setJump] = useState(false);
 
   const handleMovement = (velocity, strafeSpeed) => {
-    console.log("handleMovement called");  
+    // Introduce variables for velocity, acceleration, and deceleration
+    const acceleration = 0.01;
+    const deceleration = 0.001;
+
     if (moveForward) {
+      // Increase velocity when moving forward
       controlsRef.current.moveForward(velocity);
-    } else if (moveLeft) {
-      controlsRef.current.moveRight(-strafeSpeed);
+      velocity += acceleration;
     } else if (moveBackward) {
+      // Decrease velocity when moving backward
       controlsRef.current.moveForward(-velocity);
+      velocity -= acceleration;
+    } else {
+      // Decelerate when not moving
+      if (velocity > 0) {
+        velocity -= deceleration;
+      } else if (velocity < 0) {
+        velocity += deceleration;
+      }
+    }
+
+    if (moveLeft) {
+      controlsRef.current.moveRight(-strafeSpeed);
     } else if (moveRight) {
       controlsRef.current.moveRight(strafeSpeed);
     }
-  
+
     if (jump) {
       const controlsObject = controlsRef.current.getObject();
       if (controlsObject) {
@@ -31,7 +46,7 @@ const Controls = ({ playerRef }) => {
         setJump(false);
       }
     }
-  
+
     // Update player position based on the controls
     const controlsObject = controlsRef.current.getObject();
     if (controlsObject && playerRef.current) {
@@ -42,8 +57,6 @@ const Controls = ({ playerRef }) => {
   };
 
   useFrame(() => {
-    console.log("useFrame called");
-  
     const movementSpeed = 0.1;
     const strafeSpeed = 0.1;
     handleMovement(movementSpeed, strafeSpeed);
