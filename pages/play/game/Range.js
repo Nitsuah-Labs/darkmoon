@@ -1,8 +1,9 @@
 // Range.js
 import React from "react";
 import { Canvas } from "@react-three/fiber";
-import { Physics, usePlane, useBox } from "@react-three/cannon";
+import { Physics, useBox } from "@react-three/cannon";
 import Controls from "./Controls";
+import Floor from "./Floor";
 
 function Plane(props) {
   const [ref] = usePlane(() => ({ rotation: [-Math.PI / 2, 0, 0], ...props }));
@@ -38,7 +39,7 @@ function Range() {
       gl={{ alpha: false }}
       camera={{ position: [-1, 1, 5], fov: 50 }}
     >
-      <color attach="background" args={["lightblue"]} />
+      <color attach="background" args={["black"]} />
       <Physics>
         <Controls />
         <hemisphereLight intensity={0.35} />
@@ -49,7 +50,7 @@ function Range() {
           intensity={2}
           castShadow
         />
-        <Plane />
+        <Floor />
         <Cube />
         <Cube position={[0, 10, -2]} color="rebeccapurple" />
         <Cube position={[0, 20, -2]} color="darkseagreen" />
