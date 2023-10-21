@@ -14,7 +14,7 @@ const Controls = ({ playerRef }) => {
   const handleMovement = (velocity, strafeSpeed) => {
     // Introduce variables for acceleration and deceleration
     const acceleration = 0.002; // Try a smaller acceleration value
-    const deceleration = 0.05; // Try a higher deceleration value
+    const deceleration = 0.001; // Try a smaller deceleration value
   
     // Update velocity based on acceleration and deceleration
     if (moveForward) {
@@ -22,12 +22,13 @@ const Controls = ({ playerRef }) => {
       velocity = Math.min(velocity + acceleration, 0.1);
     } else if (moveBackward) {
       // Decrease velocity when moving backward
-      velocity = Math.max(velocity - acceleration, -0.1);
+      const deceleratedVelocity = velocity > 0 ? Math.max(velocity - deceleration, 0) : Math.min(velocity + deceleration, 0);
+      velocity = deceleratedVelocity;
     } else {
       // Decelerate when not moving
-      const deceleratedVelocity = velocity > 0 ? Math.max(velocity - deceleration, 0) : Math.min(velocity + deceleration, 0);
-      // Use the decelerated velocity only if it's not too small
-      velocity = Math.abs(deceleratedVelocity) > 0.0001 ? deceleratedVelocity : 0;
+      velocity = 0;
+      // const deceleratedVelocity = velocity > 0 ? Math.max(velocity - deceleration, 0) : Math.min(velocity + deceleration, 0);
+      // velocity = deceleratedVelocity;
     }
   
     // Update controls based on velocity
@@ -42,15 +43,23 @@ const Controls = ({ playerRef }) => {
     if (jump) {
       const controlsObject = controlsRef.current.getObject();
       if (controlsObject) {
-        controlsObject.position.y += 0.2;
+        controlsObject.position.y += 0.5;
         setJump(false);
       }
     }
   
-    // Update player position based on the controls
+    // Gravity simulation
+    const gravity = 0.02; // Adjust the gravity value as needed
+
     const controlsObject = controlsRef.current.getObject();
-    if (controlsObject && playerRef.current) {
-      playerRef.current.position.copy(controlsObject.position);
+    if (controlsObject) {
+      if (controlsObject.position.y > 0) {
+        // Apply gravity if the player is above the ground
+        controlsObject.position.y -= gravity;
+      } else {
+        // Reset position to ground level
+        controlsObject.position.y = 0;
+      }
     }
   };
 
@@ -75,8 +84,7 @@ const Controls = ({ playerRef }) => {
 
         case "ArrowDown":
         case "KeyS":
-          setMoveBackward(true);
-          break;
+          return;
 
         case "ArrowRight":
         case "KeyD":
