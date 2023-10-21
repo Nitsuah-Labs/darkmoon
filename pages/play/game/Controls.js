@@ -11,20 +11,34 @@ const Controls = ({ playerRef }) => {
     left: false,
     right: false,
     jump: false,
+    down: false,
   });
 
+  const gravity = 0.0005; // Adjust as needed, smaller values for lower gravity
+
   const handleJump = (velocity) => {
+    const jumpForce = 0.015;
     const controlsObject = controlsRef.current.getObject();
     if (controlsObject && movement.jump) {
       // Apply a continuous upward force
-      velocity = Math.min(velocity + 0.01, 0.2);
+      velocity = Math.min(velocity + jumpForce, 0.2);
+      controlsObject.position.y += velocity;
+    }
+  };
+  
+  const handleDown = (velocity) => {
+    const downForce = 0.015;
+    const controlsObject = controlsRef.current.getObject();
+    if (controlsObject && movement.down) {
+      // Apply a continuous downward force
+      velocity = Math.max(velocity - downForce, -0.2); // Use Math.max to limit downward speed
       controlsObject.position.y += velocity;
     }
   };
 
   const handleMovement = (velocity, strafeSpeed, keys) => {
-    const { forward, backward, left, right, jump } = keys;
-
+    const { forward, backward, left, right, jump, down } = keys;
+  
     if (forward) {
       velocity = Math.min(velocity + 0.002, 0.1);
     } else if (backward) {
@@ -32,29 +46,35 @@ const Controls = ({ playerRef }) => {
     } else {
       velocity = 0;
     }
-
+  
     controlsRef.current.moveForward(velocity);
-
+  
     if (left) {
       controlsRef.current.moveRight(-strafeSpeed);
     } else if (right) {
       controlsRef.current.moveRight(strafeSpeed);
     }
-
-    handleJump(velocity);
-
-    const gravity = 0.003;
+  
     const controlsObject = controlsRef.current.getObject();
-
-    if (controlsObject && controlsObject.position.y > 0) {
-      controlsObject.position.y -= gravity;
-    } else {
-      controlsObject.position.y = 0;
+  
+    if (jump && !down) {
+      console.log("ARISE", velocity);
+      handleJump(velocity);
+    } else if (down && !jump) {
+      console.log("DESCENT", velocity);
+      handleDown(velocity);
+    } else if ((jump && down) || (!jump && !down)) {
+      if (controlsObject && controlsObject.position.y > 0) {
+        controlsObject.position.y -= gravity;
+      } else {
+        controlsObject.position.y = 0;
+      }
     }
   };
 
   useEffect(() => {
     const handleKeyDown = (event) => {
+      console.log("Key down:", event.code);
       switch (event.code) {
         case "ArrowUp":
         case "KeyW":
@@ -77,15 +97,21 @@ const Controls = ({ playerRef }) => {
           break;
 
         case "Space":
-          setMovement((prev) => ({ ...prev, jump: true }));
+          setMovement((prev) => ({ ...prev, jump: true, down: false }));
           break;
 
+        case "KeyZ":
+          setMovement((prev) => ({ ...prev, down: true, jump: false }));
+          console.log("down: true");
+          break;
+  
         default:
           return;
       }
     };
 
     const handleKeyUp = (event) => {
+      console.log("Key up:", event.code);
       switch (event.code) {
         case "ArrowUp":
         case "KeyW":
@@ -108,9 +134,13 @@ const Controls = ({ playerRef }) => {
           break;
 
         case "Space":
-          setMovement((prev) => ({ ...prev, jump: false }));
+          setMovement((prev) => ({ ...prev, jump: false, down: false }));
           break;
 
+        case "KeyZ":
+          setMovement((prev) => ({ ...prev, down: false, jump: false }));
+        break;
+  
         default:
           return;
       }
