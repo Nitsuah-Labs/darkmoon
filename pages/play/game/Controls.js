@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 import { PointerLockControls } from "@react-three/drei";
 
-const Controls = ({ playerRef }) => {
+const Controls = ({ playerRef, onPauseGame }) => {
   const controlsRef = useRef();
   const isLocked = useRef(false);
   const [movement, setMovement] = useState({
@@ -14,7 +14,7 @@ const Controls = ({ playerRef }) => {
     down: false,
   });
 
-  const gravity = 0.0005; // Adjust as needed, smaller values for lower gravity
+  const gravity = 0.0008;
 
   const handleJump = (velocity) => {
     const jumpForce = 0.015;
@@ -170,13 +170,21 @@ const Controls = ({ playerRef }) => {
       ref={controlsRef}
       onUpdate={() => {
         if (controlsRef.current) {
+          const velocity = 0;
           controlsRef.current.addEventListener("lock", () => {
             console.log("lock");
             isLocked.current = true;
           });
+
           controlsRef.current.addEventListener("unlock", () => {
             console.log("unlock");
             isLocked.current = false;
+
+            // Pausing the game when controls are unlocked
+            if (!isLocked.current) {
+              // Call the function to pause the game in Range.js
+              onPauseGame();
+            }
           });
         }
       }}
