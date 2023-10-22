@@ -68,13 +68,13 @@ const Controls = ({ playerRef }) => {
         controlsObject.position.y = 0;
       }
     }
-    // Log position to console
+    // Log PLayer coordinates to console
     console.log(
-      "Position X:",
+      "PLAYER X:",
       controlsObject.position.x.toFixed(2),
-      "Position Y:",
+      "Y:",
       controlsObject.position.y.toFixed(2),
-      "Position Z:",
+      "Z:",
       controlsObject.position.z.toFixed(2)
     );
   };

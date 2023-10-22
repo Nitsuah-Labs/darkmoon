@@ -12,10 +12,13 @@ function Range() {
   const playerRef = useRef();
 
   useEffect(() => {
-    // Optional: You can set an initial position for the player if needed
-    if (playerRef.current) {
-      playerRef.current.api.position.set(0, 0, 0);
-    }
+    const initializePlayerPosition = () => {
+      if (playerRef.current) {
+        playerRef.current.api.position.set(0, 0, 0);
+      }
+    };
+
+    initializePlayerPosition();
   }, [playerRef]);
 
   return (
@@ -37,11 +40,12 @@ function Range() {
           intensity={2}
           castShadow
         />
-        <Floor />
+        {/* Pass playerRef to Player component */}
         <Player ref={playerRef} />
         <Cube position={[0, 10, -2]} color="rebeccapurple" />
-        <Cube position={[0, 20, -2]} color="darkseagreen" />
+        <Cube position={[0, 20, -2]} color="pink" />
         <Cube position={[0, 30, -2]} color="darkorange" />
+        <Floor size={[500, 500]} color="darkseagreen" />
       </Physics>
     </Canvas>
   );
