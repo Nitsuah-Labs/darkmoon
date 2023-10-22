@@ -2,14 +2,8 @@ import React, { useMemo } from "react";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import { ConnectionProvider, WalletProvider } from "@solana/wallet-adapter-react";
-import {CoinbaseWalletAdapter} from "@solana/wallet-adapter-coinbase";
-import {
-  GlowWalletAdapter,
-  PhantomWalletAdapter,
-  SlopeWalletAdapter,
-  SolflareWalletAdapter,
-  TorusWalletAdapter,
-} from "@solana/wallet-adapter-wallets";
+import { CoinbaseWalletAdapter } from "@solana/wallet-adapter-coinbase";
+import { PhantomWalletAdapter} from "@solana/wallet-adapter-wallets";
 import { clusterApiUrl } from "@solana/web3.js";
 import "@solana/wallet-adapter-react-ui/styles.css";
 import "../styles/globals.css";
@@ -30,10 +24,6 @@ const App = ({ Component, pageProps }) => {
     () => [
       new CoinbaseWalletAdapter(),
       new PhantomWalletAdapter(),
-      new GlowWalletAdapter(),
-      new SlopeWalletAdapter(),
-      new SolflareWalletAdapter({ network }),
-      new TorusWalletAdapter(),
     ],
     [network]
   );
